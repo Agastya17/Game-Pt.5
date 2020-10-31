@@ -1,4 +1,4 @@
-var back;
+var back, back2, top2, bottom2;
 var player1, player2, fireballImg, waterballImg;
 var invisibleGround1, invisibleGround2, invisibleLadderTop;
 var edges;
@@ -10,9 +10,15 @@ var appleImg, book1Img, book2Img, book3Img, breadImg, chestImg, hamImg, mugImg, 
 var Gcrouch, Gjump, Gleft, Gright, Gpower, Gstart, Gthrow;
 var Vcrouch, Vdamage, Vjump, Vpower, Vright, Vstart, Vthrow;
 var EnergyMeter1=0;
+var R0, R25, R50, R75, R100, B0, B25, B50, B75, B100;
 
 function preload(){
   back = loadImage("Images/bg.png");
+  back2 = loadImage("Images/bg2.png");
+
+  top2 = loadImage("Images/topFloor.png");
+  bottom2 = loadImage("Images/bottomFloor.png");
+  
   fireballImg = loadAnimation("Images/fire1.png", "Images/fire2.png");
   waterballImg = loadAnimation("Images/water1.png", "Images/water2.png")
 
@@ -43,6 +49,18 @@ function preload(){
   Vright = loadImage("Images/VegetaRight.png");
   Vstart = loadImage("Images/VegetaStarting.png");
   Vthrow = loadImage("Images/VegetaThrow.png");
+
+  R0 = loadImage("Images/powerR0.png");
+  R25 = loadImage("Images/powerR25.png");
+  R50 = loadImage("Images/powerR50.png");
+  R75 = loadImage("Images/powerR75.png");
+  R100 = loadImage("Images/powerR100.png");
+
+  B0 = loadImage("Images/powerB0.png");
+  B25 = loadImage("Images/powerB25.png");
+  B50 = loadImage("Images/powerB50.png");
+  B75 = loadImage("Images/powerB75.png");
+  B100 = loadImage("Images/powerB100.png");
 }
 
 function setup() {
@@ -128,7 +146,7 @@ function setup() {
   invisibleGround1 = createSprite(width/2, height - 52, width,20);
   //invisibleGround1.visible = false;
 
-  invisibleGround2 = createSprite(width/2-135, height - 420, width,20);
+  invisibleGround2 = createSprite(width/2-155, height - 420, width,20);
   //invisibleGround2.visible = false;
 
   invisibleLadderTop = createSprite(1320, 370-player1.height, 70, 10);
@@ -136,110 +154,28 @@ function setup() {
 }
 
 function draw() {
-  background(back);
+  background(back2);
   edges = createEdgeSprites();
 
-  //***Player 1 CONTROLS */
-  if(keyDown(LEFT_ARROW)){
-    player1.x = player1.x - 7;
-    player1.addImage(Gleft);
-  }
-
-  if(keyDown(RIGHT_ARROW)){
-    player1.x = player1.x + 7;
-    player1.addImage(Gright);
-  }
-
-  //Before the ladder
-  if(player1.x <= 1290){
-    if(keyDown(UP_ARROW) && (player1.collide(invisibleGround1)||player1.collide(invisibleGround2))){
-      player1.velocityY = -13;
-      player1.addImage(Gjump);
-    }
-    player1.velocityY = player1.velocityY + 0.8;
-    
-    if(keyDown(DOWN_ARROW)){
-      player1.addImage(Gcrouch);
-    }
-  }
-  //Ladder controls
-  else if(player1.x > 1290 && player1.x < 1330 && player1.y >= 330){
-    if(keyDown(UP_ARROW)){
-      player1.y = player1.y - 5;
-    }
-    //player1.velocityY = player1.velocityY + 0.8;
-    
-    if(keyDown(DOWN_ARROW)){
-      player1.y = player1.y + 5;
-    }
-  }
-
-  //***Player 2 CONTROLS */
-  if(keyDown(65)){
-    player2.x = player2.x - 7;
-  }
-
-  if(keyDown(68)){
-    player2.x = player2.x + 7;
-    player2.addImage(Vright);
-  }
-
-  if(player2.x < 1290){
-    if(keyDown(87) && (player2.collide(invisibleGround1)||player2.collide(invisibleGround2))){
-      player2.velocityY = -13;
-    }
-    player2.velocityY = player2.velocityY + 0.8;
-    
-    if(keyDown(83)){
-      player2.addImage(Vcrouch);
-    }
-  }
-  else if(player2.x >= 1290 && player2.x <= 1330 && player2.y >= 330){
-    if(keyDown(87)){
-      player2.y = player2.y - 5;
-    }
-    //player2.velocityY = player2.velocityY + 0.8;
-    
-    if(keyDown(83)){
-      player2.y = player2.y + 5;
-    }
-  }
-
-  //Fireball powerup
-  if(keyWentDown("m") && fireCharge > 0){
-    Fireball();
-    player1.addImage(Gpower);
-    fireCharge--;
-    if(fireCharge === 0){
-      cTime = frameCount;
-      rTime = 100;
-    }
-  }
-  if(frameCount === cTime + 100){
-    fireCharge = 10;
-  }
+  player1Controls();
+  player2Controls();
   
-  rTime--;
-
-  //Waterball powerup
-  if(keyWentDown(113) || keyWentDown(81) && waterCharge > 0){
-    Waterball();
-    player2.addImage(Vpower);
-    waterCharge--;
-    if(waterCharge === 0){
-      wTime = frameCount;
-      aTime = 100;
-    }
-  }
-  if(frameCount === wTime + 100){
-    waterCharge = 10;
+  //*** FACEOFF */
+  if(player1.y>=invisibleGround2.y+200 && player2.y>=invisibleGround2.y+200){
+    background("black");
+    imageMode(CENTER);
+    image(bottom2, width/2, height/2)
   }
 
-  aTime--;
+  if(player1.y<=invisibleGround2.y-50 && player2.y<=invisibleGround2.y-50){
+    background("black");
+    imageMode(CENTER);
+    image(top2, width/2, height/2)
+  }
 
   PickUp();
   
-  console.log(EnergyMeter1);
+  //console.log(EnergyMeter1);
   player1.collide(invisibleGround1);
   player1.collide(invisibleGround2);
   player1.collide(invisibleLadderTop);
@@ -283,5 +219,79 @@ function timer(){
   }
   if(i>=0){
     text("Time Remaining: " + i + " seconds", displayWidth/2-250, 30);
+  }
+}
+
+function player1Controls(){
+   
+   if(keyDown(LEFT_ARROW)){
+    player1.x = player1.x - 7;
+    player1.addImage(Gleft);
+    player1.scale = 0.85;
+  }
+
+  if(keyDown(RIGHT_ARROW)){
+    player1.x = player1.x + 7;
+    player1.addImage(Gright);
+    player1.scale = 0.85;
+  }
+
+  //Before the ladder
+  if(player1.x <= 1290){
+    if(keyDown(UP_ARROW) && (player1.collide(invisibleGround1)||player1.collide(invisibleGround2))){
+      player1.velocityY = -13;
+      player1.addImage(Gjump);
+      player1.scale = 0.55;    
+    }
+    player1.velocityY = player1.velocityY + 0.8;
+    
+    if(keyDown(DOWN_ARROW)){
+      player1.addImage(Gcrouch);
+      //player1.setCollider(3);
+    }
+  }
+  //Ladder controls
+  else if(player1.x > 1290 && player1.x < 1330 && player1.y >= 330){
+    if(keyDown(UP_ARROW)){
+      player1.y = player1.y - 5;
+    }
+    //player1.velocityY = player1.velocityY + 0.8;
+    
+    if(keyDown(DOWN_ARROW)){
+      player1.y = player1.y + 5;
+    }
+  }
+
+}
+
+function player2Controls(){
+  if(keyDown(65)){
+    player2.x = player2.x - 7;
+  }
+
+  if(keyDown(68)){
+    player2.x = player2.x + 7;
+    player2.addImage(Vright);
+  }
+
+  if(player2.x < 1290){
+    if(keyDown(87) && (player2.collide(invisibleGround1)||player2.collide(invisibleGround2))){
+      player2.velocityY = -13;
+    }
+    player2.velocityY = player2.velocityY + 0.8;
+    
+    if(keyDown(83)){
+      player2.addImage(Vcrouch);
+    }
+  }
+  else if(player2.x >= 1290 && player2.x <= 1330 && player2.y >= 330){
+    if(keyDown(87)){
+      player2.y = player2.y - 5;
+    }
+    //player2.velocityY = player2.velocityY + 0.8;
+    
+    if(keyDown(83)){
+      player2.y = player2.y + 5;
+    }
   }
 }

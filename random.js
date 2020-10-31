@@ -3,6 +3,22 @@ function Fireball(){
     fireball.addAnimation("fire", fireballImg);
     fireball.velocityX = 9;
     fireball.scale = -0.18;
+
+    //** SHOOTING */
+    if(keyWentDown("m") && fireCharge > 0){
+        Fireball();
+        player1.addImage(Gpower);
+        fireCharge--;
+        if(fireCharge === 0){
+        cTime = frameCount;
+        rTime = 100;
+        }
+    }
+    if(frameCount === cTime + 100){
+        fireCharge = 10;
+    }
+    
+    rTime--;
 }
 
 function Waterball(){
@@ -10,9 +26,27 @@ function Waterball(){
     waterball.addAnimation("water",waterballImg);
     waterball.velocityX = 9;
     waterball.scale = -0.5;
+
+    //** SHOOTING */
+    if(keyWentDown(113) || keyWentDown(81) && waterCharge > 0){
+        Waterball();
+        player2.addImage(Vpower);
+        waterCharge--;
+        if(waterCharge === 0){
+        wTime = frameCount;
+        aTime = 100;
+        }
+    }
+    if(frameCount === wTime + 100){
+        waterCharge = 10;
+    }
+
+    aTime--;
 }
 
 function PickUp(){
+    fill("red");
+
     if(keyDown("P") || keyDown("p")){
         if(player1.isTouching(plant2)){
             EnergyMeter1 += 30;
@@ -66,6 +100,7 @@ function PickUp(){
             EnergyMeter1 += 15;
             ham.destroy();
         }
+
     }
 
     if(keyDown("E") || keyDown("e")){
@@ -121,5 +156,10 @@ function PickUp(){
             EnergyMeter1 += 15;
             ham.destroy();
         }
+    }
+
+    if(plant2 !== undefined){
+        
+        ellipse(plant2.x, plant2.y, 100);
     }
 }
